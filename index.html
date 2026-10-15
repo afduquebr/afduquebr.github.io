@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andrés Duque</title>
+<meta name="description" content="Andrés Duque, PhD student in particle physics on ATLAS at the LHC: machine learning for jet tagging, anomaly detection and emerging jets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@800&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root {
+  /* blue chapters: the user asked for tones of blue; proportions kept from the dealt "Newsprint and brass" */
+  --bg: #e8eef7;
+  --surface: #dbe4f2;
+  --ink: #0a1630;
+  --muted: #3d4f6e;
+  --blue: #1f4fff;
+  --blue-pale: #a9c1ff;
+  --blue-ink: #eef3ff;
+  --navy: #0a1630;
+  --navy-ink: #e8eef7;
+  --navy-muted: #a3b4d4;
+  --accent: #5cd6ff;
+
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+  --step-head: clamp(2.5rem, 1.2rem + 5vw, 5.5rem);
+  --margin: clamp(16px, 3vw, 44px);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-reveal: 800ms;
+
+  --display: "Big Shoulders", "Arial Narrow", Impact, sans-serif;
+  --text: "Public Sans", system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font: 400 var(--step-body)/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+::selection { background: var(--accent); color: var(--navy); }
+.display { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.005em; line-height: 0.88; }
+
+/* chapters: each section is one flat field */
+.ch-blue { background: var(--blue); color: var(--blue-ink); }
+.ch-navy { background: var(--navy); color: var(--navy-ink); }
+.ch-pale { background: var(--bg); color: var(--ink); }
+
+/* fixed corner header takes the ink of the chapter beneath it */
+.corner { position: fixed; inset: 0 0 auto 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 16px var(--margin); pointer-events: none; color: var(--hdr, var(--blue-ink)); background: var(--hdr-bg, var(--blue)); transition: color 300ms ease, background-color 300ms ease; }
+.corner > * { pointer-events: auto; }
+.wordmark { font-weight: 600; text-decoration: none; }
+.corner nav { display: flex; gap: clamp(14px, 2vw, 28px); align-items: center; }
+.corner nav a:not(.btn) { text-decoration: none; }
+.corner nav a:not(.btn):hover { text-decoration: underline; text-underline-offset: 4px; }
+.btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 0; font-weight: 600; text-decoration: none; border: 2px solid currentColor; transition: transform var(--t-press) var(--ease-out), background-color var(--t-hover) ease, color var(--t-hover) ease; }
+.btn:hover { background: var(--hdr, var(--blue-ink)); color: var(--hdr-bg, var(--blue)); }
+.btn:active { transform: scale(0.96); }
+@media (max-width: 700px) { .corner nav .hide-sm { display: none; } }
+
+/* hero */
+.hero { position: relative; min-height: 100svh; padding: 0 var(--margin); overflow: hidden; }
+.hero h1 { position: absolute; top: 15svh; left: var(--margin); font-size: clamp(120px, 21vw, 340px); line-height: 0.82; letter-spacing: -0.01em; }
+.hero h1 span { display: block; }
+.hero h1 .l1 { color: var(--blue-pale); }
+.hero h1 .l2 { color: var(--navy); }
+.hero .sub { position: absolute; right: var(--margin); bottom: 7svh; width: min(30vw, 420px); font-size: var(--step-lead); line-height: 1.35; }
+@media (max-width: 700px) {
+  .hero h1 { top: 16svh; font-size: 27vw; }
+  .hero .sub { left: var(--margin); right: auto; width: 86%; bottom: 24px; font-size: 1.125rem; }
+}
+
+/* the live thing: an event display you can fire */
+.collider { padding: clamp(96px, 12vw, 180px) var(--margin) clamp(64px, 8vw, 120px); }
+.collider-head { display: flex; justify-content: space-between; align-items: end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: 40px; }
+.collider h2 { font-size: var(--step-head); }
+.collider-head p { max-width: 34ch; font-size: var(--step-lead); line-height: 1.35; }
+#event { display: block; width: 100%; height: min(72svh, 760px); cursor: crosshair; background: #0d1c3d; touch-action: manipulation; }
+.readout { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; align-items: center; margin-top: 24px; }
+.readout output { font-size: var(--step-lead); font-variant-numeric: tabular-nums; }
+.readout output b { color: var(--accent); font-weight: 600; }
+.readout .note { color: var(--navy-muted); font-size: var(--step-small); margin-top: 8px; }
+.btn-fill { background: var(--accent); color: var(--navy); border-color: var(--accent); }
+.btn-fill:hover { background: var(--navy-ink); border-color: var(--navy-ink); color: var(--navy); }
+
+/* about: side facts, wide paragraph */
+.about { padding: clamp(120px, 14vw, 220px) var(--margin); display: grid; grid-template-columns: 31% 1fr; row-gap: 120px; }
+.facts { display: grid; gap: 20px; align-content: start; font-size: var(--step-small); }
+.facts dt { color: var(--muted); }
+.facts dd { font-weight: 600; }
+.about .lead { font-size: var(--step-lead); line-height: 1.35; max-width: 40ch; }
+.about .more { margin-top: 24px; max-width: 60ch; }
+.about .lead em { font-style: normal; color: var(--blue); font-weight: 600; }
+.record-word { font-weight: 600; }
+.records { display: flex; gap: 64px; flex-wrap: wrap; }
+.records ul { list-style: none; padding: 0; width: 280px; display: grid; gap: 10px; }
+.records li { display: flex; justify-content: space-between; gap: 16px; }
+.records li span { color: var(--muted); }
+@media (max-width: 800px) {
+  .about { grid-template-columns: 1fr; row-gap: 40px; }
+  .about .lead { order: -1; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .records { gap: 40px; }
+}
+
+/* work: big names, sticky drawn preview */
+.work { padding: clamp(120px, 14vw, 220px) var(--margin); }
+.work h2 { font-size: var(--step-lead); font-family: var(--text); font-weight: 600; margin-bottom: 48px; }
+.work-grid { display: grid; grid-template-columns: minmax(0, 1fr) 30vw; gap: 4vw; align-items: start; }
+.projects { list-style: none; padding: 0; }
+.projects a { display: flex; align-items: baseline; flex-wrap: nowrap; gap: 4px 24px; padding: 12px 0; text-decoration: none; color: var(--navy-muted); transition: color var(--t-hover) ease, transform var(--t-hover) var(--ease-out); }
+.projects a .name { font-size: var(--step-head); white-space: nowrap; }
+.projects a .kind { font-size: var(--step-small); white-space: nowrap; }
+.projects a.on { color: var(--navy-ink); transform: translateX(12px); }
+.projects a.on .kind { color: var(--accent); }
+.projects .desc { display: none; }
+.frame { position: sticky; top: 15svh; }
+.frame canvas { display: block; width: 100%; aspect-ratio: 4 / 5; background: #0d1c3d; transition: opacity 200ms ease; }
+.frame p { margin-top: 16px; min-height: 4.5em; }
+.projects canvas { display: none; }
+@media (max-width: 900px) {
+  .work-grid { grid-template-columns: 1fr; }
+  .frame { display: none; }
+  .projects li + li { margin-top: 48px; }
+  .projects canvas { display: block; width: 100%; aspect-ratio: 16 / 10; background: #0d1c3d; margin-bottom: 12px; }
+  .projects a { color: var(--navy-ink); flex-direction: column; gap: 6px; }
+  .projects a .name { font-size: 13vw; white-space: normal; }
+  .projects a .kind { color: var(--accent); }
+  .projects a.on { transform: none; }
+  .projects .desc { display: block; margin-top: 8px; }
+}
+
+/* path: two-ended rows, narrow column */
+.path { padding: clamp(120px, 14vw, 220px) var(--margin); }
+.path-col { width: min(560px, 100%); margin-left: 22%; }
+.path h2 { font-size: var(--step-lead); font-family: var(--text); font-weight: 600; margin-bottom: 32px; }
+.group-word { color: var(--muted); margin-top: 40px; margin-bottom: 8px; }
+.path ul { list-style: none; padding: 0; }
+.path li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; min-height: 40px; padding: 6px 0; }
+.path li .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--blue); margin-right: 10px; vertical-align: -1px; flex: none; }
+.path li .val { color: var(--muted); font-size: var(--step-small); white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .path-col { margin-left: 0; } .path li { flex-direction: column; gap: 2px; min-height: 44px; } }
+
+/* contact: the address as display type */
+.contact { position: relative; min-height: 100svh; padding: 0 var(--margin); }
+.contact .ask { position: absolute; top: 15svh; left: var(--margin); max-width: 24ch; font-size: var(--step-lead); line-height: 1.35; }
+.contact .mail { position: absolute; left: var(--margin); right: var(--margin); bottom: 20svh; font-size: clamp(3.5rem, 11vw, 13rem); text-decoration: none; overflow-wrap: anywhere; transition: color var(--t-hover) ease; }
+.contact .mail:hover { color: var(--navy); }
+.contact .corners { position: absolute; left: var(--margin); right: var(--margin); bottom: 32px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px 32px; }
+.contact .corners div { display: flex; gap: 24px; flex-wrap: wrap; }
+.contact .corners a:hover { color: var(--navy); }
+@media (max-width: 700px) {
+  .contact { min-height: 86svh; }
+  .contact .mail { font-size: 10vw; bottom: 30svh; }
+  .contact .mail .at { display: block; }
+  .contact .corners { flex-direction: column; }
+}
+
+/* footer: the name first, cropped at its foot */
+.foot { padding: clamp(96px, 10vw, 160px) var(--margin) 32px; overflow: hidden; }
+.foot .big { font-size: 19vw; line-height: 0.8; white-space: nowrap; margin-bottom: 72px; }
+.foot-row { display: grid; grid-template-columns: 5fr 1fr 6fr; gap: 32px; }
+.foot .places { list-style: none; padding: 0; display: grid; gap: 8px; }
+.foot .places a { color: var(--accent); font-size: var(--step-lead); text-decoration: none; }
+.foot .places a:hover { text-decoration: underline; text-underline-offset: 6px; }
+.foot .links { grid-column: 3; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 24px; align-content: start; }
+.foot .links a { text-decoration: none; color: var(--navy-ink); }
+.foot .links a:hover { text-decoration: underline; }
+.legal { display: flex; justify-content: space-between; margin-top: 96px; font-size: var(--step-small); color: var(--navy-muted); }
+@media (max-width: 800px) { .foot-row { grid-template-columns: 1fr; } .foot .links { grid-column: 1; grid-template-columns: 1fr 1fr; } }
+
+/* entrances: only hidden when the script is running */
+.js .rise { opacity: 0; transform: translateY(24px); transition: opacity var(--t-reveal) var(--ease-out), transform var(--t-reveal) var(--ease-out); transition-delay: calc(var(--i, 0) * 75ms); }
+.js .rise.in { opacity: 1; transform: none; }
+.js .hero h1 span { opacity: 0; transform: translateY(40%); animation: up 900ms var(--ease-out) forwards; }
+.js .hero h1 .l2 { animation-delay: 120ms; }
+@keyframes up { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .js .rise, .js .hero h1 span { opacity: 1; transform: none; animation: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<header class="corner" id="corner">
+  <a class="wordmark" href="#top">Andrés Duque</a>
+  <nav aria-label="Main">
+    <a class="hide-sm" href="#research">Research</a>
+    <a class="hide-sm" href="#work">Work</a>
+    <a class="hide-sm" href="#path">Path</a>
+    <a class="btn" href="#contact">Get in touch</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero ch-blue" data-hdr="#eef3ff" data-hdr-bg="#1f4fff">
+    <h1 class="display"><span class="l1">Andrés</span><span class="l2">Duque</span></h1>
+    <p class="sub rise">Particle physicist on ATLAS at CERN’s Large Hadron Collider, teaching neural networks to find the jets the Standard Model doesn’t predict.</p>
+  </section>
+
+  <section class="collider ch-navy" id="research" data-hdr="#e8eef7" data-hdr-bg="#0a1630" aria-labelledby="collider-h">
+    <div class="collider-head">
+      <h2 class="display rise" id="collider-h">Jets from nowhere</h2>
+      <p class="rise" style="--i:1">Some hidden-sector particles fly a few centimetres before decaying, so their jets appear from nowhere. Tap the detector to make a collision.</p>
+    </div>
+    <canvas id="event" class="rise" style="--i:2" role="img" aria-label="Cartoon event display of a proton collision, with particle tracks curving out of the centre"></canvas>
+    <div class="readout">
+      <div>
+        <output id="readout" aria-live="polite">Waiting for a collision</output>
+        <p class="note">A cartoon of an event display, not ATLAS data.</p>
+      </div>
+      <button class="btn btn-fill" id="fire" type="button">Collide again</button>
+    </div>
+  </section>
+
+  <section class="about ch-pale" data-hdr="#0a1630" data-hdr-bg="#e8eef7" aria-label="About">
+    <dl class="facts rise">
+      <div><dt>Role</dt><dd>PhD student, third year</dd></div>
+      <div><dt>Lab</dt><dd>LPC Clermont-Ferrand</dd></div>
+      <div><dt>Experiment</dt><dd>ATLAS, LHC</dd></div>
+    </dl>
+    <div class="rise" style="--i:1">
+      <p class="lead">I work where collider physics meets machine learning: models that classify jets, learn what ordinary collisions look like, and flag the ones that aren’t.</p>
+      <p class="more">At the Laboratoire de Physique de Clermont-Auvergne I am part of the ATLAS search for emerging jets, a possible signature of a dark sector, and I build the anomaly-detection and tagging tools around it.</p>
+    </div>
+    <p class="record-word rise">Methods</p>
+    <div class="records rise" style="--i:1">
+      <ul>
+        <li>Jet tagging <span>transformers</span></li>
+        <li>Anomaly detection <span>autoencoders</span></li>
+        <li>Generative models <span>flows</span></li>
+        <li>Detector simulation <span>Geant4</span></li>
+        <li>Luminosity <span>LHCb</span></li>
+      </ul>
+      <ul>
+        <li>Python <span>daily</span></li>
+        <li>PyTorch <span>daily</span></li>
+        <li>HDF5 datasets <span>large</span></li>
+        <li>SLURM, multi-GPU <span>CC-IN2P3</span></li>
+        <li>Languages <span>es · fr · en</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="work ch-navy" id="work" data-hdr="#e8eef7" data-hdr-bg="#0a1630" aria-labelledby="work-h">
+    <h2 class="rise" id="work-h">Selected work</h2>
+    <div class="work-grid">
+      <ol class="projects" id="projects">
+        <li class="rise"><canvas data-kind="emerging"></canvas><a href="#work" class="on" data-kind="emerging" data-desc="An ATLAS search for jets whose tracks start away from the collision point, using large-radius reclustered jets and large-radius tracking."><span class="name display">Emerging jets</span></a><p class="desc">An ATLAS search for jets whose tracks start away from the collision point, using large-radius reclustered jets and large-radius tracking.</p></li>
+        <li class="rise" style="--i:1"><canvas data-kind="vae"></canvas><a href="#work" data-kind="vae" data-desc="A variational autoencoder trained on ordinary jets, so that jets from new physics show up as the ones it cannot reconstruct."><span class="name display">Dark-VAE</span></a><p class="desc">A variational autoencoder trained on ordinary jets, so that jets from new physics show up as the ones it cannot reconstruct.</p></li>
+        <li class="rise" style="--i:2"><canvas data-kind="flow"></canvas><a href="#work" data-kind="flow" data-desc="A machine-learning model of jets for ATLAS, learning their distribution directly from the data."><span class="name display">JetFlow</span></a><p class="desc">A machine-learning model of jets for ATLAS, learning their distribution directly from the data.</p></li>
+        <li class="rise" style="--i:3"><canvas data-kind="tagger"></canvas><a href="#work" data-kind="tagger" data-desc="A multiclass tagger for boosted jets built on the Particle Transformer, telling W, Z, top and Higgs jets from QCD."><span class="name display">Boosted tagger</span></a><p class="desc">A multiclass tagger for boosted jets built on the Particle Transformer, telling W, Z, top and Higgs jets from QCD.</p></li>
+      </ol>
+      <div class="frame" aria-hidden="true">
+        <canvas id="preview"></canvas>
+        <p id="preview-desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="path ch-pale" id="path" data-hdr="#0a1630" data-hdr-bg="#e8eef7" aria-labelledby="path-h">
+    <div class="path-col">
+      <h2 class="rise" id="path-h">From Colombia to CERN</h2>
+      <p class="group-word rise">Now</p>
+      <ul>
+        <li class="rise"><span><i class="dot" aria-hidden="true"></i>PhD, ATLAS, LPC Clermont-Ferrand</span><span class="val">Clermont-Ferrand</span></li>
+      </ul>
+      <p class="group-word rise">Before</p>
+      <ul>
+        <li class="rise"><span><i class="dot" aria-hidden="true"></i>Internship, LHCb: ML anomaly detection</span><span class="val">LHCb</span></li>
+        <li class="rise" style="--i:1"><span><i class="dot" aria-hidden="true"></i>Internship, LHCb: Geant4 detector simulation</span><span class="val">LHCb</span></li>
+        <li class="rise" style="--i:2"><span><i class="dot" aria-hidden="true"></i>Internship, LHCb: luminosity measurement</span><span class="val">LHCb</span></li>
+        <li class="rise" style="--i:3"><span><i class="dot" aria-hidden="true"></i>Studies, Université Paris-Saclay</span><span class="val">Paris</span></li>
+        <li class="rise" style="--i:4"><span><i class="dot" aria-hidden="true"></i>Studies in physics</span><span class="val">Colombia</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="contact ch-blue" id="contact" data-hdr="#eef3ff" data-hdr-bg="#1f4fff" aria-label="Contact">
+    <p class="ask rise">Write about collaborations, jets, machine learning, or a coffee at CERN.</p>
+    <a class="mail display rise" style="--i:1" href="mailto:andres.duque@cern.ch">andres.duque<span class="at">@cern.ch</span></a>
+    <div class="corners">
+      <span>Clermont-Ferrand, France</span>
+      <div><a href="https://github.com/">GitHub</a><a href="https://inspirehep.net/">INSPIRE-HEP</a><a href="https://www.linkedin.com/">LinkedIn</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot ch-navy" data-hdr="#e8eef7" data-hdr-bg="#0a1630">
+  <p class="big display" aria-hidden="true">Andrés Duque</p>
+  <div class="foot-row">
+    <ul class="places">
+      <li><a href="mailto:andres.duque@cern.ch">Email</a></li>
+      <li><a href="https://github.com/">GitHub</a></li>
+      <li><a href="https://inspirehep.net/">INSPIRE-HEP</a></li>
+    </ul>
+    <div class="links">
+      <a href="#research">Research</a><a href="#work">Work</a><a href="#path">Path</a>
+      <a href="https://atlas.cern/">ATLAS</a><a href="https://lpc.uca.fr/">LPC</a><a href="https://home.cern/">CERN</a>
+    </div>
+  </div>
+  <div class="legal"><span>© 2026 Andrés Duque</span><a href="#top">Back to top</a></div>
+</footer>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rng = s => () => (s = (s + 0x6D2B79F5) | 0, s = Math.imul(s ^ (s >>> 15), 1 | s), s ^= s + Math.imul(s ^ (s >>> 7), 61 | s), ((s ^ (s >>> 14)) >>> 0) / 4294967296);
+const gauss = r => Math.sqrt(-2 * Math.log(r() + 1e-9)) * Math.cos(2 * Math.PI * r());
+const C = { bg: '#0d1c3d', band1: '#11255a', band2: '#162f6e', band3: '#102252', track: '#8fb3ff', emerge: '#5cd6ff', hot: '#eef3ff', blue: '#1f4fff' };
+
+function fit(cv) {
+  const d = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return null;
+  cv.width = w * d; cv.height = h * d;
+  const x = cv.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0);
+  return { x, w, h };
+}
+
+// one simulated event: jets of tracks curling in the solenoid field, some starting at a displaced vertex
+function makeEvent(seed) {
+  const r = rng(seed), nj = 2 + Math.floor(r() * 3), emergingIdx = r() < 0.55 ? Math.floor(r() * nj) : -1, jets = [];
+  for (let j = 0; j < nj; j++) {
+    const phi = j === 0 ? r() * 6.283 : jets[0].phi + Math.PI + gauss(r) * 0.5 + (j > 1 ? gauss(r) * 1.4 : 0);
+    const em = j === emergingIdx, tracks = [];
+    for (let t = 0, n = 6 + Math.floor(r() * 9); t < n; t++)
+      tracks.push({ a: phi + gauss(r) * 0.16, k: (r() < 0.5 ? -1 : 1) * (0.2 + r() * 2.2), d: em ? 0.1 + r() * 0.2 : 0, len: 0.55 + r() * 0.45 });
+    jets.push({ phi, em, e: 0.4 + r() * 0.6, tracks });
+  }
+  const score = emergingIdx >= 0 ? 0.82 + r() * 0.17 : 0.03 + r() * 0.3;
+  return { jets, nj, emerging: emergingIdx >= 0, score, id: 1000000 + Math.floor(r() * 9000000) };
+}
+
+function drawEvent(x, w, h, ev, p, R0) {
+  const cx = w / 2, cy = h / 2, R = R0 || Math.min(w, h) * 0.46;
+  x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+  const ring = (a, b, c) => { x.beginPath(); x.arc(cx, cy, R * b, 0, 7); x.arc(cx, cy, R * a, 0, 7, true); x.fillStyle = c; x.fill('evenodd'); };
+  ring(0.04, 0.42, C.band1); ring(0.5, 0.74, C.band2); ring(0.82, 1, C.band3);
+  for (const j of ev.jets) {
+    // calorimeter deposit, grows with energy
+    const e = j.e * Math.min(1, p * 1.6), span = 0.22;
+    x.beginPath(); x.arc(cx, cy, R * (0.5 + 0.24 * e), j.phi - span, j.phi + span); x.arc(cx, cy, R * 0.5, j.phi + span, j.phi - span, true);
+    x.fillStyle = j.em ? C.emerge : C.blue; x.globalAlpha = 0.55 + 0.4 * j.e; x.fill(); x.globalAlpha = 1;
+    for (const t of j.tracks) {
+      let px = cx + Math.cos(j.phi) * t.d * R, py = cy + Math.sin(j.phi) * t.d * R, a = t.a;
+      const steps = Math.floor(40 * t.len * p), ds = (0.42 - t.d) * R / 40;
+      if (steps < 1) continue;
+      x.beginPath(); x.moveTo(px, py);
+      for (let s = 0; s < steps; s++) { a += t.k * ds / R; px += Math.cos(a) * ds; py += Math.sin(a) * ds; x.lineTo(px, py); }
+      x.strokeStyle = j.em ? C.emerge : C.track; x.lineWidth = j.em ? 2 : 1.5; x.stroke();
+    }
+    if (j.em) { // displaced vertex
+      const d = j.tracks[0].d * R; x.beginPath(); x.arc(cx + Math.cos(j.phi) * d, cy + Math.sin(j.phi) * d, 4, 0, 7); x.fillStyle = C.hot; x.fill();
+    }
+  }
+  x.beginPath(); x.arc(cx, cy, 4, 0, 7); x.fillStyle = C.hot; x.fill();
+}
+
+// the live thing
+const cv = document.getElementById('event'), out = document.getElementById('readout');
+let ev = null, t0 = 0, raf = 0, seed = 7, touched = false, auto = 0;
+function collide() {
+  ev = makeEvent(seed++); t0 = performance.now();
+  out.innerHTML = `Event ${ev.id.toLocaleString('en')} · ${ev.nj} jets · anomaly score ${ev.score.toFixed(2)} ` + (ev.emerging ? '<b>flagged: emerging jet</b>' : 'ordinary QCD');
+  cancelAnimationFrame(raf); frame();
+}
+function frame() {
+  const f = fit(cv); if (!f) return;
+  const p = reduce ? 1 : Math.min(1, (performance.now() - t0) / 900);
+  drawEvent(f.x, f.w, f.h, ev, 1 - Math.pow(1 - p, 3));
+  if (p < 1) raf = requestAnimationFrame(frame);
+}
+const fire = () => { touched = true; clearInterval(auto); collide(); };
+cv.addEventListener('click', fire);
+document.getElementById('fire').addEventListener('click', fire);
+collide();
+if (!reduce) new IntersectionObserver(([e]) => {
+  clearInterval(auto);
+  if (e.isIntersecting && !touched) auto = setInterval(collide, 3800);
+}, { threshold: 0.4 }).observe(cv);
+
+// project previews, drawn from each project's subject
+function drawPreview(cv, kind) {
+  const f = fit(cv); if (!f) return; const { x, w, h } = f, r = rng(kind.length * 97);
+  if (kind === 'emerging') { const e = makeEvent(11); while (!e.emerging) Object.assign(e, makeEvent(Math.floor(r() * 1e6))); drawEvent(x, w, h, e, 1, Math.min(w, h) * 0.55); return; }
+  x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+  if (kind === 'vae') { // latent space: a dense cloud of ordinary jets, a few outliers far away
+    for (let i = 0; i < 900; i++) { x.fillStyle = C.track; x.globalAlpha = 0.5; x.fillRect(w / 2 + gauss(r) * w * 0.12, h / 2 + gauss(r) * h * 0.1, 2.5, 2.5); }
+    x.globalAlpha = 1; x.fillStyle = C.emerge;
+    for (let i = 0; i < 9; i++) { const a = r() * 6.28, d = 0.32 + r() * 0.12; x.beginPath(); x.arc(w / 2 + Math.cos(a) * w * d, h / 2 + Math.sin(a) * h * d * 0.8, 6, 0, 7); x.fill(); }
+  } else if (kind === 'flow') { // a grid of noise being warped into a jet-like density
+    for (let i = 0; i <= 18; i++) for (let k = 0; k <= 22; k++) {
+      const u = i / 18 - 0.5, v = k / 22 - 0.5, rad = Math.hypot(u, v), s = 0.35 + 0.65 * Math.exp(-rad * 3.5);
+      x.fillStyle = rad < 0.2 ? C.emerge : C.track; x.globalAlpha = 0.35 + 0.6 * s;
+      x.beginPath(); x.arc(w / 2 + u * w * 0.9 * (0.3 + rad * 1.4), h / 2 + v * h * 0.9 * (0.3 + rad * 1.4), 2 + 4 * s, 0, 7); x.fill();
+    }
+    x.globalAlpha = 1;
+  } else { // three-prong boosted jet in the eta-phi plane, constituents sized by momentum
+    const prongs = [[0.38, 0.38], [0.64, 0.46], [0.47, 0.66]];
+    for (const [px, py] of prongs) for (let i = 0; i < 26; i++) {
+      const s = Math.pow(r(), 3); x.fillStyle = s > 0.3 ? C.emerge : C.track; x.globalAlpha = 0.85;
+      x.beginPath(); x.arc(w * (px + gauss(r) * 0.04), h * (py + gauss(r) * 0.035), 2 + s * 16, 0, 7); x.fill();
+    }
+    x.globalAlpha = 1;
+  }
+}
+const pv = document.getElementById('preview'), pd = document.getElementById('preview-desc'), links = [...document.querySelectorAll('.projects a')];
+function show(a) {
+  links.forEach(l => l.classList.toggle('on', l === a)); pd.textContent = a.dataset.desc;
+  pv.style.opacity = 0.2; setTimeout(() => { drawPreview(pv, a.dataset.kind); pv.style.opacity = 1; }, reduce ? 0 : 120);
+}
+links.forEach(a => { a.addEventListener('mouseenter', () => show(a)); a.addEventListener('focus', () => show(a)); a.addEventListener('click', e => { e.preventDefault(); show(a); }); });
+function drawAll() {
+  document.querySelectorAll('.projects canvas').forEach(c => drawPreview(c, c.dataset.kind));
+  const on = document.querySelector('.projects a.on'); if (on) { drawPreview(pv, on.dataset.kind); pd.textContent = on.dataset.desc; }
+  if (ev) frame();
+}
+drawAll(); addEventListener('resize', drawAll);
+
+// entrances, once per element
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('.rise').forEach(el => io.observe(el));
+
+// the corner header takes the ink of the chapter under it
+const corner = document.getElementById('corner'), chapters = [...document.querySelectorAll('[data-hdr]')];
+function ink() {
+  const y = corner.offsetHeight / 2;
+  const ch = chapters.find(c => { const b = c.getBoundingClientRect(); return b.top <= y && b.bottom > y; });
+  if (ch) { corner.style.setProperty('--hdr', ch.dataset.hdr); corner.style.setProperty('--hdr-bg', ch.dataset.hdrBg); }
+}
+addEventListener('scroll', ink, { passive: true }); ink();
+</script>
+</body>
+</html>
